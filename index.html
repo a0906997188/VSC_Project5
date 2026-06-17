@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI 輔助閱讀網站</title>
+    <!-- 引入自訂的 CSS 樣式表 -->
+    <link rel="stylesheet" href="style.css">
+    <!-- 引入 PDF.js 函式庫來解析 PDF 檔案 -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
+    <script>
+        // 設定 PDF.js 的 worker 路徑
+        pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
+    </script>
+    <!-- 引入 marked.js 來將 AI 產生的 Markdown 轉換成 HTML -->
+    <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+</head>
+<body>
+    <div class="container">
+        <div class="header-wrapper">
+            <h1>📚 AI 輔助閱讀小幫手</h1>
+            <p class="subtitle">讓 AI 幫你輕鬆讀懂長篇文章！</p>
+        </div>
+
+        <!-- API 設定區 (安全設計：Key 僅存放於本地端，上傳 GitHub 安全無虞) -->
+        <section class="step-section">
+            <h2>⚙️ 步驟 1：API 設定</h2>
+            <div class="input-area">
+                <input type="password" id="apiKeyInput" placeholder="請輸入你的 Google Gemini API Key (以 AIza 開頭)">
+            </div>
+            <p class="api-note">🔒 安全提示：你的 API Key 僅會儲存在你個人的瀏覽器中，不會上傳到任何外部伺服器，原始碼放上 GitHub 完全安全。</p>
+        </section>
+
+        <!-- 步驟 2：選擇輸入方式 -->
+        <section class="step-section">
+            <h2>📄 步驟 2：你要如何輸入文章？</h2>
+            <div class="input-toggle">
+                <label>
+                    <input type="radio" name="inputType" value="text" checked> 貼上文字
+                </label>
+                <label>
+                    <input type="radio" name="inputType" value="pdf"> 上傳 PDF 檔案
+                </label>
+            </div>
+
+            <!-- 文字輸入區塊 (預設顯示) -->
+            <div id="textInputArea" class="input-area">
+                <textarea id="textInput" placeholder="請在這裡貼上你想閱讀的文章..."></textarea>
+            </div>
+
+            <!-- PDF 上傳區塊 (預設隱藏) -->
+            <div id="pdfInputArea" class="input-area" style="display: none;">
+                <input type="file" id="pdfUpload" accept="application/pdf">
+                <p id="pdfStatus" class="status-msg"></p>
+                <!-- 隱藏的 textarea 用來存放從 PDF 解析出來的文字 -->
+                <textarea id="pdfExtractedText" style="display: none;"></textarea>
+            </div>
+        </section>
+
+        <!-- 步驟 3：選擇功能 -->
+        <section class="step-section">
+            <h2>🎯 步驟 3：選擇你需要的功能</h2>
+            <div class="features-grid">
+                <label class="feature-item">
+                    <input type="checkbox" name="feature" value="幫我將這篇文章分段，讓它更容易閱讀。"> 文章分段
+                </label>
+                <label class="feature-item">
+                    <input type="checkbox" name="feature" value="請幫我整理這篇文章的重點。"> 重點整理
+                </label>
+                <label class="feature-item">
+                    <input type="checkbox" name="feature" value="請幫我產生這篇文章的簡短摘要。"> 產生摘要
+                </label>
+                <label class="feature-item">
+                    <input type="checkbox" name="feature" value="請列出這篇文章的關鍵字。"> 產生關鍵字
+                </label>
+                <label class="feature-item">
+                    <input type="checkbox" name="feature" value="請根據文章內容，產生幾個閱讀測驗問題，幫助我確認是否看懂。"> 產生閱讀問題
+                </label>
+                <label class="feature-item">
+                    <input type="checkbox" name="feature" value="請用國小/國中生能聽懂的簡單白話文，重新解釋這篇文章。"> 用簡單白話解釋文章
+                </label>
+            </div>
+        </section>
+
+        <!-- 步驟 4：開始分析 -->
+        <section class="step-section center">
+            <button id="analyzeBtn" class="primary-btn">🚀 開始分析</button>
+            <p id="loadingMsg" class="status-msg loading-pulse" style="display: none;">⏳ AI 正在努力思考中，這可能需要幾秒鐘...</p>
+        </section>
+
+        <!-- 分析結果顯示區塊 -->
+        <section id="resultSection" class="step-section" style="display: none;">
+            <h2>✨ 分析結果</h2>
+            <div id="resultContent" class="result-box"></div>
+        </section>
+    </div>
+
+    <!-- 引入自訂的 JavaScript 檔案 -->
+    <script src="script.js"></script>
+</body>
+</html>
